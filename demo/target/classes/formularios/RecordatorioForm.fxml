@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.*?>
+<?import java.time.LocalDate?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.formularios.RecordatorioForm">
+   <children>
+      <SplitPane dividerPositions="0.35" layoutX="14.0" layoutY="14.0" prefHeight="600.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" style="-fx-font-weight: bold; -fx-font-size: 16;" text="Agenda tu Recordatorio ⏰" />
+                  
+                  <Label layoutX="14.0" layoutY="50.0" text="Fecha:" />
+                  <DatePicker fx:id="fechaPicker" layoutX="14.0" layoutY="67.0" prefWidth="280.0" />
+                  
+                  <Label layoutX="14.0" layoutY="110.0" text="Hora (HH:MM:SS):" />
+                  <TextField fx:id="horaField" layoutX="14.0" layoutY="127.0" prefWidth="280.0" promptText="Ej: 08:30:00" />
+                  
+                  <Label layoutX="14.0" layoutY="170.0" text="Mensaje:" />
+                  <TextArea fx:id="mensajeArea" layoutX="14.0" layoutY="187.0" prefHeight="200.0" prefWidth="280.0" wrapText="true" promptText="Ej: Entrenamiento de piernas en el gimnasio." />
+                  
+                  <Button fx:id="guardarBtn" layoutX="14.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleGuardar" prefWidth="120.0" style="-fx-background-color: #007ACC; -fx-text-fill: white; -fx-font-weight: bold;" text="Guardar" />
+                  <Button layoutX="174.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleNuevo" prefWidth="120.0" text="Nuevo" />
+                  <Button layoutX="14.0" layoutY="470.0" mnemonicParsing="false" onAction="#handleEliminar" prefWidth="280.0" style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-weight: bold;" text="Eliminar Seleccionado" />
+                  <Button layoutX="14.0" layoutY="520.0" mnemonicParsing="false" onAction="#handleVolverAlMenu" style="-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-weight: bold;" text="← Menú Principal" />
+               </children>
+            </AnchorPane>
+            
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" style="-fx-font-weight: bold; -fx-font-size: 16;" text="Mis Recordatorios Programados" />
+                  <TableView fx:id="recordatorioTable" layoutX="14.0" layoutY="40.0" prefHeight="550.0" prefWidth="550.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+                    <columns>
+                      <TableColumn fx:id="fechaCol" prefWidth="100.0" text="Fecha" />
+                      <TableColumn fx:id="horaCol" prefWidth="80.0" text="Hora" />
+                      <TableColumn fx:id="mensajeCol" prefWidth="350.0" text="Mensaje" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+            </AnchorPane>
+         </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

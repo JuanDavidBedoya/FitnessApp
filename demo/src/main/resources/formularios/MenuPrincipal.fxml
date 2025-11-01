@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.formularios.MenuPrincipal">
+   <children>
+      <VBox alignment="CENTER" layoutX="100.0" layoutY="50.0" prefHeight="400.0" prefWidth="500.0" spacing="25.0" style="-fx-border-color: #DDDDDD; -fx-border-radius: 5;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <Label text="Bienvenid@ a Fitness App">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+            <Label text="Seleccione el módulo al que desea acceder:">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Button mnemonicParsing="false" onAction="#handleProgreso" prefHeight="40.0" prefWidth="300.0" style="-fx-background-color: #007ACC; -fx-text-fill: white; -fx-font-weight: bold;" text="💪 Mi Progreso (Peso y Calorías)" />
+            <Button mnemonicParsing="false" onAction="#handleObjetivo" prefHeight="40.0" prefWidth="300.0" style="-fx-background-color: #2ECC71; -fx-text-fill: white; -fx-font-weight: bold;" text="🎯 Mis Objetivos Deportivos" />
+            <Button mnemonicParsing="false" onAction="#handleRecordatorio" prefHeight="40.0" prefWidth="300.0" style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-font-weight: bold;" text="⏰ Mis Recordatorios" />
+            <Button mnemonicParsing="false" onAction="#handleRutinaFavorita" prefHeight="40.0" prefWidth="300.0" style="-fx-background-color: #FFC300; -fx-text-fill: white; -fx-font-weight: bold;" text="⭐ Rutinas Favoritas" />
+            <Button mnemonicParsing="false" onAction="#handleCerrarSesion" prefHeight="40.0" prefWidth="300.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-weight: bold;" text="Cerrar Sesión" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
