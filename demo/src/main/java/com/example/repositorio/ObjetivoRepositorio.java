@@ -118,6 +118,4 @@ public class ObjetivoRepositorio {
             return false;
         }
     }
-    
-    // Nota: El UPDATE no se usa aqui, ya que actualizar un objetivo asignado es simplemente eliminarlo y crear uno nuevo
 }
