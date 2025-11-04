@@ -39,6 +39,8 @@ public class RecordatorioForm {
     @FXML private TableColumn<Recordatorio, LocalTime> horaCol;
     @FXML private TableColumn<Recordatorio, String> mensajeCol;
     @FXML private Button guardarBtn;
+    @FXML private TextField busquedatextField;
+
     
     private Usuario usuarioLogeado;
     private final RecordatorioRepositorio recordatorioRepo = new RecordatorioRepositorio();
@@ -64,7 +66,10 @@ public class RecordatorioForm {
                 }
             }
         );
-        
+
+        busquedatextField.textProperty().addListener((observable, valorAnterior, valorNuevo) -> {
+            filtrarRecordatorios(valorNuevo);
+        });
         data = FXCollections.observableArrayList();
         recordatorioTable.setItems(data);
     }
@@ -177,5 +182,29 @@ public class RecordatorioForm {
         mensajeArea.clear();
         guardarBtn.setText("Guardar");
         recordatorioTable.getSelectionModel().clearSelection();
+    }
+
+    public void handleBuscarRecordatorio(ActionEvent actionEvent) {
+        filtrarRecordatorios(busquedatextField.getText());
+    }
+    private void filtrarRecordatorios(String busqueda) {
+        cargarDatosRecordatorios();
+
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            return;
+        }
+
+        String filtro = busqueda.toLowerCase();
+
+
+        data.setAll(
+                data.stream()
+                        .filter(recordatorio ->
+                                recordatorio.getMensaje().toLowerCase().contains(filtro) ||
+                                        (recordatorio.getHora() != null && recordatorio.getHora().toString().contains(filtro)) ||
+                                        (recordatorio.getFecha() != null && recordatorio.getFecha().toString().contains(filtro))
+                        )
+                        .toList()
+        );
     }
 }

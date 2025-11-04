@@ -16,13 +16,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -35,6 +30,7 @@ public class RutinaFavoritaForm {
     @FXML private TableColumn<RutinaFavoritaModelo, String> nombreCol;
     @FXML private TableColumn<RutinaFavoritaModelo, String> duracionCol;
     @FXML private TableColumn<RutinaFavoritaModelo, LocalDate> fechaFavCol;
+    @FXML private TextField busquedatextField;
     
     private Usuario usuarioLogeado;
     private final FavoritaRepositorio favoritaRepo = new FavoritaRepositorio();
@@ -53,7 +49,10 @@ public class RutinaFavoritaForm {
         nombreCol.setCellValueFactory(new PropertyValueFactory<>("nombreRutina"));
         duracionCol.setCellValueFactory(new PropertyValueFactory<>("duracionRutina"));
         fechaFavCol.setCellValueFactory(new PropertyValueFactory<>("fechaFavorito"));
-        
+
+        busquedatextField.textProperty().addListener((observable, valorAnterior, valorNuevo) -> {
+            filtrarRutinas(valorNuevo);
+        });
         favoritasActivas = FXCollections.observableArrayList();
         favoritasTable.setItems(favoritasActivas);
         
@@ -158,4 +157,30 @@ public class RutinaFavoritaForm {
             e.printStackTrace();
         }
     }
+
+    public void handleBuscarRutina(ActionEvent actionEvent) {
+        filtrarRutinas(busquedatextField.getText());
+    }
+
+    private void filtrarRutinas(String busqueda) {
+        cargarFavoritasActivas();
+
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            return;
+        }
+
+        String filtro = busqueda.toLowerCase();
+
+
+        favoritasActivas.setAll(
+                favoritasActivas.stream()
+                        .filter(recordatorio ->
+                                recordatorio.getNombreRutina().toLowerCase().contains(filtro) ||
+                                        (recordatorio.getDuracionRutina() != null && recordatorio.getDuracionRutina().toString().contains(filtro)) ||
+                                        (recordatorio.getFechaFavorito() != null && recordatorio.getFechaFavorito().toString().contains(filtro))
+                        )
+                        .toList()
+        );
+    }
+
 }
