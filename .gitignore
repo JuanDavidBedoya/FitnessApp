@@ -1,31 +1,26 @@
+### Maven ###
+target/
+
 ### Java ###
 *.class
 *.log
 
-# Compiled files
-/bin/
+# Compiled output
 /out/
-
-### Maven ###
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
+*/out/
+bin/
+*/bin/
 
 ### IntelliJ IDEA ###
 .idea/
 *.iml
 *.iws
-
-# Workspace files
 *.ipr
-
-### OS generated ###
-.DS_Store
-Thumbs.db
 
 ### JavaFX ###
 */media/
 */export/
+
+### OS ###
+.DS_Store
+Thumbs.db
