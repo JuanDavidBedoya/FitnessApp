@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="650.0" prefWidth="900.0" spacing="15.0" style="-fx-background-color: #ECF0F1; -fx-border-color: #34495E; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.formularios.ReportesForm">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <children>
+      <HBox alignment="CENTER_LEFT" spacing="20.0">
+         <children>
+            <Button onAction="#handleVolverAlSelector" style="-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-weight: bold;" text="← Volver al Selector" />
+            <Label text="Generador de Reportes" textFill="#2c3e50">
+               <font>
+                  <Font name="System Bold" size="26.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <Label text="Selecciona el reporte a generar:" textFill="#7f8c8d" />
+      <HBox alignment="CENTER_LEFT" spacing="10.0">
+         <children>
+            <Button onAction="#handleReporte1" style="-fx-background-color: #27AE60; -fx-text-fill: white;" text="1. Total Entrenadores (Simple)" />
+            <Button onAction="#handleReporte2" style="-fx-background-color: #F39C12; -fx-text-fill: white;" text="2. Progreso de Peso (Intermedio 1)" />
+            <Button onAction="#handleReporte3" style="-fx-background-color: #8E44AD; -fx-text-fill: white;" text="3. Popularidad de Rutinas (Intermedio 2)" />
+            <Button onAction="#handleReporte4" style="-fx-background-color: #C0392B; -fx-text-fill: white;" text="4. Planes por Cliente/Entrenador (Complejo)" />
+         </children>
+      </HBox>
+      <Label fx:id="reporteTitle" text="Tabla de Resultados del Reporte Seleccionado" VBox.vgrow="NEVER">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      
+      <TableView fx:id="reportesTable" prefHeight="400.0" prefWidth="860.0" VBox.vgrow="ALWAYS" />
+
+      <Button onAction="#handleGenerarPDF" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #27AE60; -fx-text-fill: white;" text="Generar PDF" />
+
+      <Button onAction="#handleCerrarSesion" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white;" text="Cerrar Sesión" />
+   </children>
+</VBox>

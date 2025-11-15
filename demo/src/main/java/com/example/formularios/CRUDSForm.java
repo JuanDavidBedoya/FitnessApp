@@ -3,16 +3,17 @@ package com.example.formularios;
 import java.io.IOException;
 
 import com.example.modelos.Usuario;
+import com.example.utils.Alerts;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-public class MenuPrincipal {
+public class CRUDSForm {
 
     private Usuario usuarioLogeado;
 
@@ -22,19 +23,15 @@ public class MenuPrincipal {
 
     private void abrirFormulario(javafx.event.ActionEvent event, String fxmlFileName, String title, ControllerSetup controllerSetup) {
     try {
-        // 1. Obtener la Stage actual a partir del botón presionado
         Stage stageActual = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
         String rutaAbsoluta = "/formularios/" + fxmlFileName;
         
-        // 2. Cargar el FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource(rutaAbsoluta));
-        AnchorPane pane = loader.load();
+        Parent pane = loader.load();
         
-        // 3. Configurar el controlador específico
         controllerSetup.setup(loader.getController());
 
-        // 4. Reutilizar la Stage actual para la nueva escena
         stageActual.setTitle(title);
         stageActual.setScene(new Scene(pane));
         stageActual.show();
@@ -87,15 +84,35 @@ public class MenuPrincipal {
     private void abrirVentanaLogin() {
         try {
             Stage newStage = new Stage();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login/Login.fxml")); 
-            AnchorPane loginPane = loader.load();
-            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login/Login.fxml"));
+            Parent loginPane = loader.load();
+
             newStage.setTitle("Fitness App - Iniciar Sesión");
             newStage.setScene(new Scene(loginPane));
             newStage.show();
 
         } catch (IOException e) {
             System.err.println("Error al cargar la ventana de Login.");
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleVolverAlSelector(ActionEvent event) {
+        try {
+            Stage stageActual = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/formularios/SelectorPrincipal.fxml"));
+            Parent selectorPane = loader.load();
+
+            SelectorPrincipal selectorController = loader.getController();
+            selectorController.setUsuarioData(usuarioLogeado); 
+
+            stageActual.setTitle("Fitness App - Selecciona una Opción");
+            stageActual.setScene(new Scene(selectorPane));
+            stageActual.show();
+            
+        } catch (IOException e) {
+            Alerts.showAlert(javafx.scene.control.Alert.AlertType.ERROR, "Error de Navegación", "No se pudo cargar el Selector Principal.");
             e.printStackTrace();
         }
     }

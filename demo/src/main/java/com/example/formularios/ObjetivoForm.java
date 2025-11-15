@@ -148,18 +148,18 @@ public class ObjetivoForm {
         try {
             Stage stageActual = (Stage) ((Button) event.getSource()).getScene().getWindow();
             
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/formularios/MenuPrincipal.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/formularios/CRUDSForm.fxml"));
             AnchorPane menuPane = loader.load();
 
-            MenuPrincipal menuController = loader.getController();
+            CRUDSForm menuController = loader.getController();
             menuController.setUsuarioData(usuarioLogeado);
 
-            stageActual.setTitle("Fitness App - Menú Principal");
+            stageActual.setTitle("Fitness App - Administración de Datos");
             stageActual.setScene(new Scene(menuPane));
             stageActual.show();
             
         } catch (IOException e) {
-            System.err.println("Error al cargar la ventana del Menú Principal.");
+            System.err.println("Error al cargar la ventana de los CRUDs.");
             e.printStackTrace();
         }
     }

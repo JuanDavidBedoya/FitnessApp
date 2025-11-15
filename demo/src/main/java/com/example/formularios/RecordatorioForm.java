@@ -160,10 +160,10 @@ public class RecordatorioForm {
         try {
             Stage stageActual = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/formularios/MenuPrincipal.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/formularios/CRUDSForm.fxml"));
             AnchorPane menuPane = loader.load();
 
-            MenuPrincipal menuController = loader.getController();
+            CRUDSForm menuController = loader.getController();
             menuController.setUsuarioData(usuarioLogeado);
 
             stageActual.setTitle("Fitness App - Menú Principal");
