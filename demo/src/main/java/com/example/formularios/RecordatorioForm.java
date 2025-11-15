@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
+
 import com.example.modelos.Recordatorio;
 import com.example.modelos.Usuario;
 import com.example.repositorio.RecordatorioRepositorio;
@@ -39,7 +40,9 @@ public class RecordatorioForm {
     @FXML private TableColumn<Recordatorio, LocalTime> horaCol;
     @FXML private TableColumn<Recordatorio, String> mensajeCol;
     @FXML private Button guardarBtn;
-    
+    @FXML private TextField busquedatextField;
+
+
     private Usuario usuarioLogeado;
     private final RecordatorioRepositorio recordatorioRepo = new RecordatorioRepositorio();
     private ObservableList<Recordatorio> data;
@@ -50,21 +53,24 @@ public class RecordatorioForm {
         fechaPicker.setValue(LocalDate.now());
         cargarDatosRecordatorios();
     }
-    
+
     @FXML
     public void initialize() {
         fechaCol.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         horaCol.setCellValueFactory(new PropertyValueFactory<>("hora"));
         mensajeCol.setCellValueFactory(new PropertyValueFactory<>("mensaje"));
-        
+
         recordatorioTable.getSelectionModel().selectedItemProperty().addListener(
-            (obs, oldSelection, newSelection) -> {
-                if (newSelection != null) {
-                    cargarRecordatorioParaEdicion(newSelection);
+                (obs, oldSelection, newSelection) -> {
+                    if (newSelection != null) {
+                        cargarRecordatorioParaEdicion(newSelection);
+                    }
                 }
-            }
         );
-        
+
+        busquedatextField.textProperty().addListener((observable, valorAnterior, valorNuevo) -> {
+            filtrarRecordatorios(valorNuevo);
+        });
         data = FXCollections.observableArrayList();
         recordatorioTable.setItems(data);
     }
@@ -96,7 +102,7 @@ public class RecordatorioForm {
             LocalTime hora = LocalTime.parse(horaField.getText()); // Formato HH:MM:SS
             String mensaje = mensajeArea.getText();
             String cedula = usuarioLogeado.getCedula();
-            
+
             boolean exito = false;
 
             if (recordatorioSeleccionado == null) {
@@ -121,15 +127,15 @@ public class RecordatorioForm {
             Alerts.showAlert(AlertType.ERROR, "Error de Formato", "La hora debe estar en formato HH:MM:SS (ej: 08:30:00).");
         }
     }
-    
+
     @FXML
     private void handleEliminar() {
         Recordatorio recordatorioAEliminar = recordatorioTable.getSelectionModel().getSelectedItem();
-        
+
         if (recordatorioAEliminar != null) {
-            Optional<ButtonType> result = Alerts.showConfirmation("Confirmar Eliminación", 
-                "¿Está seguro de que desea eliminar el recordatorio del " + recordatorioAEliminar.getFecha() + "?");
-            
+            Optional<ButtonType> result = Alerts.showConfirmation("Confirmar Eliminación",
+                    "¿Está seguro de que desea eliminar el recordatorio del " + recordatorioAEliminar.getFecha() + "?");
+
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 if (recordatorioRepo.eliminarRecordatorio(recordatorioAEliminar.getCodRecordatorio())) {
                     Alerts.showAlert(AlertType.INFORMATION, "Éxito", "Recordatorio eliminado correctamente.");
@@ -153,7 +159,7 @@ public class RecordatorioForm {
     private void handleVolverAlMenu(ActionEvent event) {
         try {
             Stage stageActual = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/formularios/MenuPrincipal.fxml"));
             AnchorPane menuPane = loader.load();
 
@@ -163,13 +169,13 @@ public class RecordatorioForm {
             stageActual.setTitle("Fitness App - Menú Principal");
             stageActual.setScene(new Scene(menuPane));
             stageActual.show();
-            
+
         } catch (IOException e) {
             System.err.println("Error al cargar la ventana del Menú Principal.");
             e.printStackTrace();
         }
     }
-    
+
     private void limpiarCampos() {
         recordatorioSeleccionado = null;
         fechaPicker.setValue(LocalDate.now());
@@ -177,5 +183,29 @@ public class RecordatorioForm {
         mensajeArea.clear();
         guardarBtn.setText("Guardar");
         recordatorioTable.getSelectionModel().clearSelection();
+    }
+
+    public void handleBuscarRecordatorio(ActionEvent actionEvent) {
+        filtrarRecordatorios(busquedatextField.getText());
+    }
+    private void filtrarRecordatorios(String busqueda) {
+        cargarDatosRecordatorios();
+
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            return;
+        }
+
+        String filtro = busqueda.toLowerCase();
+
+
+        data.setAll(
+                data.stream()
+                        .filter(recordatorio ->
+                                recordatorio.getMensaje().toLowerCase().contains(filtro) ||
+                                        (recordatorio.getHora() != null && recordatorio.getHora().toString().contains(filtro)) ||
+                                        (recordatorio.getFecha() != null && recordatorio.getFecha().toString().contains(filtro))
+                        )
+                        .toList()
+        );
     }
 }

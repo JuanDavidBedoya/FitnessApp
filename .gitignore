@@ -1,0 +1,26 @@
+### Maven ###
+target/
+
+### Java ###
+*.class
+*.log
+
+# Compiled output
+/out/
+*/out/
+bin/
+*/bin/
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.iws
+*.ipr
+
+### JavaFX ###
+*/media/
+*/export/
+
+### OS ###
+.DS_Store
+Thumbs.db

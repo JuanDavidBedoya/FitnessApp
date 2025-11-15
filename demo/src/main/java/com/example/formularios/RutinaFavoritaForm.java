@@ -16,13 +16,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -35,7 +30,8 @@ public class RutinaFavoritaForm {
     @FXML private TableColumn<RutinaFavoritaModelo, String> nombreCol;
     @FXML private TableColumn<RutinaFavoritaModelo, String> duracionCol;
     @FXML private TableColumn<RutinaFavoritaModelo, LocalDate> fechaFavCol;
-    
+    @FXML private TextField busquedatextField;
+
     private Usuario usuarioLogeado;
     private final FavoritaRepositorio favoritaRepo = new FavoritaRepositorio();
     private ObservableList<RutinaFavoritaModelo> favoritasActivas;
@@ -46,22 +42,25 @@ public class RutinaFavoritaForm {
         this.usuarioLogeado = usuario;
         cargarDatosIniciales();
     }
-    
+
     @FXML
     public void initialize() {
 
         nombreCol.setCellValueFactory(new PropertyValueFactory<>("nombreRutina"));
         duracionCol.setCellValueFactory(new PropertyValueFactory<>("duracionRutina"));
         fechaFavCol.setCellValueFactory(new PropertyValueFactory<>("fechaFavorito"));
-        
+
+        busquedatextField.textProperty().addListener((observable, valorAnterior, valorNuevo) -> {
+            filtrarRutinas(valorNuevo);
+        });
         favoritasActivas = FXCollections.observableArrayList();
         favoritasTable.setItems(favoritasActivas);
-        
+
         rutinasComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             mostrarDescripcion(newValue);
         });
     }
-    
+
     private void cargarDatosIniciales() {
         if (usuarioLogeado != null) {
             listaTodasRutinas = favoritaRepo.obtenerRutinasDisponibles();
@@ -72,14 +71,14 @@ public class RutinaFavoritaForm {
             cargarFavoritasActivas();
         }
     }
-    
+
     private void cargarFavoritasActivas() {
         if (usuarioLogeado != null) {
             favoritasActivas.clear();
             favoritasActivas.addAll(favoritaRepo.obtenerFavoritasActivas(usuarioLogeado.getCedula()));
         }
     }
-    
+
     private void mostrarDescripcion(String nombreRutina) {
         if (nombreRutina == null) return;
         for (RutinaFavoritaModelo rut : listaTodasRutinas) {
@@ -99,7 +98,7 @@ public class RutinaFavoritaForm {
             Alerts.showAlert(AlertType.ERROR, "Error de Validación", "Seleccione una rutina para marcar como favorita.");
             return;
         }
-        
+
         int codRutina = -1;
         for (RutinaFavoritaModelo rut : listaTodasRutinas) {
             if (rut.getNombreRutina().equals(nombreSeleccionado)) {
@@ -107,7 +106,7 @@ public class RutinaFavoritaForm {
                 break;
             }
         }
-        
+
         if (codRutina != -1) {
             if (favoritaRepo.marcarComoFavorita(usuarioLogeado.getCedula(), codRutina)) {
                 Alerts.showAlert(AlertType.INFORMATION, "Éxito", "Rutina marcada como favorita.");
@@ -116,15 +115,15 @@ public class RutinaFavoritaForm {
             // El repositorio maneja la alerta de duplicados.
         }
     }
-    
+
     @FXML
     private void handleDesmarcarFavorita() {
         RutinaFavoritaModelo rutinaADesmarcar = favoritasTable.getSelectionModel().getSelectedItem();
-        
+
         if (rutinaADesmarcar != null) {
-            Optional<ButtonType> result = Alerts.showConfirmation("Confirmar Desmarque", 
-                "¿Está seguro de que desea desmarcar la rutina: " + rutinaADesmarcar.getNombreRutina() + "?");
-            
+            Optional<ButtonType> result = Alerts.showConfirmation("Confirmar Desmarque",
+                    "¿Está seguro de que desea desmarcar la rutina: " + rutinaADesmarcar.getNombreRutina() + "?");
+
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 if (favoritaRepo.desmarcarComoFavorita(usuarioLogeado.getCedula(), rutinaADesmarcar.getCodRutina())) {
                     Alerts.showAlert(AlertType.INFORMATION, "Éxito", "Rutina desmarcada correctamente.");
@@ -142,7 +141,7 @@ public class RutinaFavoritaForm {
     private void handleVolverAlMenu(ActionEvent event) {
         try {
             Stage stageActual = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/formularios/MenuPrincipal.fxml"));
             AnchorPane menuPane = loader.load();
 
@@ -152,10 +151,36 @@ public class RutinaFavoritaForm {
             stageActual.setTitle("Fitness App - Menú Principal");
             stageActual.setScene(new Scene(menuPane));
             stageActual.show();
-            
+
         } catch (IOException e) {
             System.err.println("Error al cargar la ventana del Menú Principal.");
             e.printStackTrace();
         }
     }
+
+    public void handleBuscarRutina(ActionEvent actionEvent) {
+        filtrarRutinas(busquedatextField.getText());
+    }
+
+    private void filtrarRutinas(String busqueda) {
+        cargarFavoritasActivas();
+
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            return;
+        }
+
+        String filtro = busqueda.toLowerCase();
+
+
+        favoritasActivas.setAll(
+                favoritasActivas.stream()
+                        .filter(recordatorio ->
+                                recordatorio.getNombreRutina().toLowerCase().contains(filtro) ||
+                                        (recordatorio.getDuracionRutina() != null && recordatorio.getDuracionRutina().toString().contains(filtro)) ||
+                                        (recordatorio.getFechaFavorito() != null && recordatorio.getFechaFavorito().toString().contains(filtro))
+                        )
+                        .toList()
+        );
+    }
+
 }

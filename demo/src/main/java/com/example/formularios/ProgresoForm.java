@@ -33,6 +33,7 @@ public class ProgresoForm {
     @FXML private TextField pesoField;
     @FXML private TextField caloriasField;
     @FXML private TextArea observacionesArea;
+    @FXML private TextField busquedaTextField;
     @FXML private TableView<Progreso> progresoTable;
     @FXML private TableColumn<Progreso, LocalDate> fechaCol;
     @FXML private TableColumn<Progreso, Double> pesoCol;
@@ -66,6 +67,10 @@ public class ProgresoForm {
                 }
             }
         );
+
+        busquedaTextField.textProperty().addListener((observable, valorAnterior, valorNuevo) -> {
+            filtrarProgresos(valorNuevo);
+        });
         
         data = FXCollections.observableArrayList();
         progresoTable.setItems(data);
@@ -184,5 +189,32 @@ public class ProgresoForm {
         observacionesArea.clear();
         guardarBtn.setText("Guardar");
         progresoTable.getSelectionModel().clearSelection();
+    }
+
+    public void handleBuscarProgreso(ActionEvent actionEvent) {
+        filtrarProgresos(busquedaTextField.getText());
+    }
+
+    private void filtrarProgresos(String busqueda) {
+        cargarDatosProgreso();
+
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            return;
+        }
+
+        String filtro = busqueda.toLowerCase();
+
+        data.setAll(
+                data.stream()
+                        .filter(progreso ->
+                                String.valueOf(progreso.getPeso()).contains(filtro) ||
+                                        String.valueOf(progreso.getCaloriasQuemadas()).contains(filtro) ||
+                                        (progreso.getFechaRegistro() != null &&
+                                                progreso.getFechaRegistro().toString().contains(filtro)) ||
+                                        (progreso.getObservaciones() != null &&
+                                                progreso.getObservaciones().toLowerCase().contains(filtro))
+                        )
+                        .toList()
+        );
     }
 }

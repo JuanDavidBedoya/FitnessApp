@@ -16,14 +16,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -33,6 +27,7 @@ public class ObjetivoForm {
     @FXML private ComboBox<String> objetivoComboBox;
     @FXML private DatePicker fechaAsignacionPicker;
     @FXML private TextArea descripcionObjetivoArea;
+    @FXML private TextField busquedaTextField;
     @FXML private TableView<ObjetivoAsignado> objetivosTable;
     @FXML private TableColumn<ObjetivoAsignado, String> nombreCol;
     @FXML private TableColumn<ObjetivoAsignado, String> descripcionCol;
@@ -63,6 +58,9 @@ public class ObjetivoForm {
       
         objetivoComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             mostrarDescripcion(newValue);
+        });
+        busquedaTextField.textProperty().addListener((observable, valorAnterior, valorNuevo) -> {
+            filtrarObjetivos(valorNuevo);
         });
     }
     
@@ -164,5 +162,30 @@ public class ObjetivoForm {
             System.err.println("Error al cargar la ventana del Menú Principal.");
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void handleBuscarObjetivo(ActionEvent actionEvent) {
+        filtrarObjetivos(busquedaTextField.getText());
+    }
+
+    private void filtrarObjetivos(String busqueda) {
+        cargarObjetivosAsignados();
+
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            return;
+        }
+
+        String filtro = busqueda.toLowerCase();
+
+        objetivosAsignados.setAll(
+                objetivosAsignados.stream()
+                        .filter(objetivo ->
+                                objetivo.getNombre().toLowerCase().contains(filtro) ||
+                                        (objetivo.getDescripcion() != null && objetivo.getDescripcion().toLowerCase().contains(filtro)) ||
+                                        (objetivo.getFechaAsignacion() != null && objetivo.getFechaAsignacion().toString().contains(filtro))
+                        )
+                        .toList()
+        );
     }
 }
