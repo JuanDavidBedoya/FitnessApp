@@ -28,6 +28,7 @@
          <children>
             <Button onAction="#handleReporte1" style="-fx-background-color: #27AE60; -fx-text-fill: white;" text="1. Total Entrenadores (Simple)" />
              <Button onAction="#handleReporte2" style="-fx-background-color: #27AE60; -fx-text-fill: white;" text="2. Total Clientes (Simple2)" />
+             <Button onAction="#handleReporte8" style="-fx-background-color: #27AE60; -fx-text-fill: white;" text="3. Logros disponibles (Simple 3)" />
          </children>
       </HBox>
        <HBox alignment="CENTER_LEFT" spacing="10.0">
@@ -35,12 +36,14 @@
                <Button onAction="#handleReporte3" style="-fx-background-color: #8E44AD; -fx-text-fill: white;" text="1. Progreso de Peso (Intermedio 1)" />
                <Button onAction="#handleReporte4" style="-fx-background-color: #8E44AD; -fx-text-fill: white;" text="2. Popularidad de Rutinas (Intermedio 2)" />
                <Button onAction="#handleReporte5" style="-fx-background-color: #8E44AD; -fx-text-fill: white;" text="3. Suscripciones Actuales(Intermedio 3)" />
+               <Button onAction="#handleReporte9" style="-fx-background-color: #8E44AD; -fx-text-fill: white;" text="4. Nivel físico de clientes (Intermedio 4)" />
            </children>
        </HBox>
        <HBox alignment="CENTER_LEFT" spacing="10.0">
            <children>
                <Button onAction="#handleReporte6" style="-fx-background-color: #c0752b; -fx-text-fill: white;" text="1. Planes por Cliente/Entrenador (Complejo)" />
                <Button onAction="#handleReporte7" style="-fx-background-color: #c0752b; -fx-text-fill: white;" text="2. Objetivo de clientes según rango de calorias (Complejo)" />
+               <Button onAction="#handleReporte10" style="-fx-background-color: #c0752b; -fx-text-fill: white;" text="3. Ranking Gamificación (Complejo 3)" />
            </children>
        </HBox>
       <Label fx:id="reporteTitle" text="Tabla de Resultados del Reporte Seleccionado" VBox.vgrow="NEVER">

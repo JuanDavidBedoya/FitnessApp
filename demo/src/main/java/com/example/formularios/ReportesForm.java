@@ -55,6 +55,14 @@ public class ReportesForm {
                         "FROM Usuario U \n" +
                         "JOIN General G ON U.cedula = G.Usuario_cedula;");
 
+        // 6. Simple 3: Lista de Logros
+        put("Reporte 3: Lista de Logros",
+                "SELECT " +
+                        "  codLogros AS CodigoLogro, " +
+                        "  nombre AS NombreLogro, " +
+                        "  descripcion AS Descripcion " +
+                        "FROM Logros;");
+
         // 1. Intermedio 1: Progreso de Peso (Clientes)
         put("Reporte 1: Progreso de Peso (Clientes)",
             "SELECT U.primerNombre, U.primerApellido, MIN(P.peso) AS PesoInicialMasBajo, MAX(P.peso) AS PesoRecienteMasAlto FROM Usuario U JOIN General G ON U.cedula = G.Usuario_cedula JOIN Progreso P ON G.Usuario_cedula = P.General_Usuario_cedula GROUP BY U.cedula, U.primerNombre, U.primerApellido ORDER BY U.cedula;");
@@ -81,8 +89,19 @@ public class ReportesForm {
                         "      WHERE s.fechaInicio >= '2025-01-01'\n" +
                         "ORDER BY s.fechaFin;");
 
+        // 4. Intermedio 4: Nivel físico de clientes
+        put("Reporte 4: Nivel físico de clientes",
+                "SELECT " +
+                        "  u.cedula AS Cedula, " +
+                        "  CONCAT(u.primerNombre, ' ', u.primerApellido) AS NombreCliente, " +
+                        "  nf.nombre AS NivelFisico " +
+                        "FROM Usuario u " +
+                        "JOIN General g ON u.cedula = g.Usuario_cedula " +
+                        "LEFT JOIN NivelFisico nf ON g.NivelFisico_codNivelFisico = nf.codNivelFisico " +
+                        "ORDER BY NombreCliente;");
 
-        // 4. Complejo 1: Planes por Cliente y Entrenador
+
+        // 5. Complejo 1: Planes por Cliente y Entrenador
         put("Reporte 1: Planes por Cliente/Entrenador",
             "SELECT C.primerNombre AS NombreCliente, C.primerApellido AS ApellidoCliente, E.primerNombre AS NombreEntrenador, PE.nombre AS NombrePlan, OD.nombre AS Objetivo FROM Usuario C JOIN General G ON C.cedula = G.Usuario_cedula JOIN UsuarioOtroUsuario UOU ON G.Usuario_cedula = UOU.General_Usuario_cedula JOIN Usuario E ON UOU.Entrenador_Usuario_cedula = E.cedula JOIN PlanEntrenamiento PE ON E.cedula = PE.Entrenador_Usuario_cedula JOIN ObjetivoDeportivo OD ON PE.ObjetivoDeportivo_codObjetivo = OD.codObjetivo WHERE UOU.tipoRelacion = 'Entrenador-Cliente' ORDER BY E.primerNombre, C.primerNombre;");
 
@@ -112,6 +131,22 @@ public class ReportesForm {
                         "        AND od.nombre = 'Ganar masa muscular'\n" +
                         "    )\n" +
                         "ORDER BY nombreCliente;\n");
+
+        // 6. Complejo 3: Ranking Gamificación (Clientes)
+        put("Reporte 3: Ranking Gamificación (Clientes)",
+                "SELECT " +
+                        "  u.cedula AS Cedula, " +
+                        "  CONCAT(u.primerNombre, ' ', u.primerApellido) AS NombreCliente, " +
+                        "  ga.puntosTotales AS PuntosTotales, " +
+                        "  COUNT(gl.Logros_codLogros) AS CantidadLogros " +
+                        "FROM Usuario u " +
+                        "JOIN General g ON g.Usuario_cedula = u.cedula " +
+                        "JOIN Gamificacion ga ON ga.General_Usuario_cedula = g.Usuario_cedula " +
+                        "LEFT JOIN GamificacionLogros gl ON gl.Gamificacion_codGamificacion = ga.codGamificacion " +
+                        "GROUP BY u.cedula, u.primerNombre, u.primerApellido, ga.puntosTotales " +
+                        "ORDER BY PuntosTotales DESC, CantidadLogros DESC;"
+        );
+
     }};
 
 
@@ -121,11 +156,15 @@ public class ReportesForm {
     
     @FXML private void handleReporte1(ActionEvent event) { ejecutarReporte("Reporte 1: Lista de Entrenadores", QUERIES.get("Reporte 1: Lista de Entrenadores")); }
     @FXML private void handleReporte2(ActionEvent event) { ejecutarReporte("Reporte 2: Lista de Clientes", QUERIES.get("Reporte 2: Lista de Clientes")); }
+    @FXML private void handleReporte8(ActionEvent event) { ejecutarReporte("Reporte 3: Lista de Logros", QUERIES.get("Reporte 3: Lista de Logros"));}
     @FXML private void handleReporte3(ActionEvent event) { ejecutarReporte("Reporte 1: Progreso de Peso (Clientes)", QUERIES.get("Reporte 1: Progreso de Peso (Clientes)")); }
     @FXML private void handleReporte4(ActionEvent event) { ejecutarReporte("Reporte 2: Popularidad de Rutinas", QUERIES.get("Reporte 2: Popularidad de Rutinas")); }
     @FXML private void handleReporte5(ActionEvent event) { ejecutarReporte("Reporte 3: Suscripciones Actuales", QUERIES.get("Reporte 3: Suscripciones Actuales")); }
+    @FXML private void handleReporte9(ActionEvent event) { ejecutarReporte("Reporte 4: Nivel físico de clientes", QUERIES.get("Reporte 4: Nivel físico de clientes"));}
     @FXML private void handleReporte6(ActionEvent event) { ejecutarReporte("Reporte 1: Planes por Cliente/Entrenador", QUERIES.get("Reporte 1: Planes por Cliente/Entrenador")); }
     @FXML private void handleReporte7(ActionEvent event) { ejecutarReporte("Reporte 2: Objetivo de clientes según rango de calorias", QUERIES.get("Reporte 2: Objetivo de clientes según rango de calorias")); }
+    @FXML private void handleReporte10(ActionEvent event) { ejecutarReporte("Reporte 3: Ranking Gamificación (Clientes)", QUERIES.get("Reporte 3: Ranking Gamificación (Clientes)")); }
+
 
 
     private void ejecutarReporte(String nombreReporte, String sql) {
