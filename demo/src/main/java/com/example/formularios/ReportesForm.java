@@ -49,17 +49,69 @@ public class ReportesForm {
         put("Reporte 1: Lista de Entrenadores",
             "SELECT U.cedula AS Cedula, U.primerNombre AS PrimerNombre, U.primerApellido AS PrimerApellido FROM Usuario U JOIN Entrenador E ON U.cedula = E.Usuario_cedula;");
 
-        // 2. Intermedio 1: Progreso de Peso (Clientes)
-        put("Reporte 2: Progreso de Peso (Clientes)",
+        // 5. Simple 2: Lista de Clientes
+        put("Reporte 2: Lista de Clientes",
+                "SELECT G.Usuario_cedula AS Cedula, U.primerNombre AS PrimerNombre, U.primerApellido AS PrimerApellido \n" +
+                        "FROM Usuario U \n" +
+                        "JOIN General G ON U.cedula = G.Usuario_cedula;");
+
+        // 1. Intermedio 1: Progreso de Peso (Clientes)
+        put("Reporte 1: Progreso de Peso (Clientes)",
             "SELECT U.primerNombre, U.primerApellido, MIN(P.peso) AS PesoInicialMasBajo, MAX(P.peso) AS PesoRecienteMasAlto FROM Usuario U JOIN General G ON U.cedula = G.Usuario_cedula JOIN Progreso P ON G.Usuario_cedula = P.General_Usuario_cedula GROUP BY U.cedula, U.primerNombre, U.primerApellido ORDER BY U.cedula;");
 
-        // 3. Intermedio 2: Popularidad de Rutinas por Nombre
-        put("Reporte 3: Popularidad de Rutinas",
+        // 2. Intermedio 2: Popularidad de Rutinas por Nombre
+        put("Reporte 2: Popularidad de Rutinas",
             "SELECT R.nombre AS NombreRutina, COUNT(RF.Rutina_codRutina) AS VecesMarcadaFavorita FROM RutinaFavorita RF JOIN Rutina R ON RF.Rutina_codRutina = R.codRutina GROUP BY R.codRutina, R.nombre ORDER BY VecesMarcadaFavorita DESC;");
 
+        // 3. Intermedio 3: suscripciones actuales(fecha)
+        put("Reporte 3: Suscripciones Actuales",
+                "SELECT \n" +
+                        "    u.cedula,\n" +
+                        "    CONCAT(u.primerNombre, ' ', u.primerApellido) AS nombreCliente,\n" +
+                        "    ts.nombre AS tipoSuscripcion,\n" +
+                        "    ts.precio,\n" +
+                        "    s.fechaInicio,\n" +
+                        "    s.fechaFin,\n" +
+                        "    s.total\n" +
+                        "FROM suscripcion s\n" +
+                        "JOIN usuario u \n" +
+                        "      ON s.General_Usuario_cedula = u.cedula\n" +
+                        "JOIN tipoSuscripcion ts \n" +
+                        "      ON s.TipoSuscripcion_codTipo = ts.codTipo\n" +
+                        "      WHERE s.fechaInicio >= '2025-01-01'\n" +
+                        "ORDER BY s.fechaFin;");
+
+
         // 4. Complejo 1: Planes por Cliente y Entrenador
-        put("Reporte 4: Planes por Cliente/Entrenador",
+        put("Reporte 1: Planes por Cliente/Entrenador",
             "SELECT C.primerNombre AS NombreCliente, C.primerApellido AS ApellidoCliente, E.primerNombre AS NombreEntrenador, PE.nombre AS NombrePlan, OD.nombre AS Objetivo FROM Usuario C JOIN General G ON C.cedula = G.Usuario_cedula JOIN UsuarioOtroUsuario UOU ON G.Usuario_cedula = UOU.General_Usuario_cedula JOIN Usuario E ON UOU.Entrenador_Usuario_cedula = E.cedula JOIN PlanEntrenamiento PE ON E.cedula = PE.Entrenador_Usuario_cedula JOIN ObjetivoDeportivo OD ON PE.ObjetivoDeportivo_codObjetivo = OD.codObjetivo WHERE UOU.tipoRelacion = 'Entrenador-Cliente' ORDER BY E.primerNombre, C.primerNombre;");
+
+        put("Reporte 2: Objetivo de clientes según rango de calorias",
+                "SELECT \n" +
+                        "    g.usuario_cedula AS cedula,\n" +
+                        "    CONCAT(u.primerNombre, ' ', u.primerApellido) AS nombreCliente,\n" +
+                        "    p.caloriasQuemadas,\n" +
+                        "    od.nombre AS objetivoDeportivo\n" +
+                        "FROM General g\n" +
+                        "INNER JOIN Usuario u\n" +
+                        "        ON u.cedula = g.usuario_cedula\n" +
+                        "INNER JOIN Progreso p\n" +
+                        "        ON p.General_Usuario_cedula = g.usuario_cedula\n" +
+                        "INNER JOIN UsuarioObjetivo uo\n" +
+                        "        ON uo.General_Usuario_cedula = g.usuario_cedula\n" +
+                        "INNER JOIN ObjetivoDeportivo od\n" +
+                        "        ON od.codObjetivo = uo.ObjetivoDeportivo_codObjetivo\n" +
+                        "WHERE \n" +
+                        "    (\n" +
+                        "        p.caloriasQuemadas > 350\n" +
+                        "        AND od.nombre IN ('Tonificar', 'Bajar de peso')\n" +
+                        "    )\n" +
+                        "    OR\n" +
+                        "    (\n" +
+                        "        p.caloriasQuemadas < 600\n" +
+                        "        AND od.nombre = 'Ganar masa muscular'\n" +
+                        "    )\n" +
+                        "ORDER BY nombreCliente;\n");
     }};
 
 
@@ -68,9 +120,12 @@ public class ReportesForm {
     }
     
     @FXML private void handleReporte1(ActionEvent event) { ejecutarReporte("Reporte 1: Lista de Entrenadores", QUERIES.get("Reporte 1: Lista de Entrenadores")); }
-    @FXML private void handleReporte2(ActionEvent event) { ejecutarReporte("Reporte 2: Progreso de Peso (Clientes)", QUERIES.get("Reporte 2: Progreso de Peso (Clientes)")); }
-    @FXML private void handleReporte3(ActionEvent event) { ejecutarReporte("Reporte 3: Popularidad de Rutinas", QUERIES.get("Reporte 3: Popularidad de Rutinas")); }
-    @FXML private void handleReporte4(ActionEvent event) { ejecutarReporte("Reporte 4: Planes por Cliente/Entrenador", QUERIES.get("Reporte 4: Planes por Cliente/Entrenador")); }
+    @FXML private void handleReporte2(ActionEvent event) { ejecutarReporte("Reporte 2: Lista de Clientes", QUERIES.get("Reporte 2: Lista de Clientes")); }
+    @FXML private void handleReporte3(ActionEvent event) { ejecutarReporte("Reporte 1: Progreso de Peso (Clientes)", QUERIES.get("Reporte 1: Progreso de Peso (Clientes)")); }
+    @FXML private void handleReporte4(ActionEvent event) { ejecutarReporte("Reporte 2: Popularidad de Rutinas", QUERIES.get("Reporte 2: Popularidad de Rutinas")); }
+    @FXML private void handleReporte5(ActionEvent event) { ejecutarReporte("Reporte 3: Suscripciones Actuales", QUERIES.get("Reporte 3: Suscripciones Actuales")); }
+    @FXML private void handleReporte6(ActionEvent event) { ejecutarReporte("Reporte 1: Planes por Cliente/Entrenador", QUERIES.get("Reporte 1: Planes por Cliente/Entrenador")); }
+    @FXML private void handleReporte7(ActionEvent event) { ejecutarReporte("Reporte 2: Objetivo de clientes según rango de calorias", QUERIES.get("Reporte 2: Objetivo de clientes según rango de calorias")); }
 
 
     private void ejecutarReporte(String nombreReporte, String sql) {
