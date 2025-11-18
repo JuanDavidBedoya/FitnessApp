@@ -80,21 +80,41 @@ public class FavoritaRepositorio {
     }
 
     //CREATE - Marcar como favorita
+    // Si el usuario ya tenía registrada esta rutina en la tabla, se actualizan las fechas.
+    // Si es la primera vez que la marca, se inserta un nuevo registro.
     public boolean marcarComoFavorita(String cedulaUsuario, int codRutina) {
-        String sql = "INSERT INTO RutinaFavorita (General_Usuario_cedula, Rutina_codRutina, fechaFavorito, fechaNoFavorito) VALUES (?, ?, ?, NULL)";
-        
-        try (Connection conn = Conexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, cedulaUsuario);
-            stmt.setInt(2, codRutina);
-            stmt.setDate(3, Date.valueOf(LocalDate.now()));
-            
-            return stmt.executeUpdate() > 0;
-            
-        } catch (SQLIntegrityConstraintViolationException e) {
-             Alerts.showAlert(Alert.AlertType.WARNING, "Rutina Favorita Duplicada", "Esta rutina ya está marcada como favorita.");
-            return false;
+        String sqlUpdate =
+                "UPDATE RutinaFavorita " +
+                        "SET fechaFavorito = ?, fechaNoFavorito = NULL " +
+                        "WHERE General_Usuario_cedula = ? AND Rutina_codRutina = ?";
+
+        String sqlInsert =
+                "INSERT INTO RutinaFavorita (General_Usuario_cedula, Rutina_codRutina, fechaFavorito, fechaNoFavorito) " +
+                        "VALUES (?, ?, ?, NULL)";
+
+        try (Connection conn = Conexion.obtenerConexion()) {
+
+            // 1) Intentar marcar nuevamente una rutina que este usuario ya tenía registrada en la tabla
+            //    (actualiza fechaFavorito y deja fechaNoFavorito en NULL)
+            try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
+                stmtUpdate.setDate(1, Date.valueOf(LocalDate.now()));
+                stmtUpdate.setString(2, cedulaUsuario);
+                stmtUpdate.setInt(3, codRutina);
+
+                int filas = stmtUpdate.executeUpdate();
+                if (filas > 0) {
+                    return true;
+                }
+            }
+
+            // 2) Si no existía registro previo, insertar una nueva rutina favorita para este usuario
+            try (PreparedStatement stmtInsert = conn.prepareStatement(sqlInsert)) {
+                stmtInsert.setString(1, cedulaUsuario);
+                stmtInsert.setInt(2, codRutina);
+                stmtInsert.setDate(3, Date.valueOf(LocalDate.now()));
+                return stmtInsert.executeUpdate() > 0;
+            }
+
         } catch (SQLException e) {
             System.err.println("Error al marcar como favorita.");
             e.printStackTrace();
